@@ -1,0 +1,13 @@
+certifi==2021.10.8
+GeoAlchemy2==0.9.4
+protobuf==3.18.1
+greenlet==1.1.2
+importlib-metadata==4.8.1
+packaging==21.0
+psycopg2-binary==2.9.1
+pyparsing==2.4.7
+schedule==1.1.0
+SQLAlchemy==1.4.26
+typing-extensions==3.10.0.2
+zc.buildout==2.13.5
+zipp==3.6.0

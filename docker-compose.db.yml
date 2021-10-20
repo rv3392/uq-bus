@@ -1,0 +1,47 @@
+services:
+  seq-gtfs-database:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: seq-gtfs
+    ports:
+      - 5432:5432
+    networks:
+      - seq-db-network
+    deploy:
+      placement:
+        constraints:
+          - node.labels.type == primary
+
+  schedule-loader:
+    depends_on:
+      - seq-gtfs-database
+    build: ./seq-schedule-loader/
+    environment:
+      DB_HOST: seq-gtfs-database
+      DB_USER: seq-gtfs
+      DB_PASSWORD: password
+      DB_PORT: 5432
+      GTFS_SCHEDULE_URL: https://gtfsrt.api.translink.com.au/GTFS/SEQ_GTFS.zip
+    networks:
+      - seq-db-network
+
+  realtime-loader:
+    depends_on:
+      - seq-gtfs-database
+    build: ./seq-realtime-loader/
+    environment:
+      DB_HOST: seq-gtfs-database
+      DB_USER: seq-gtfs
+      DB_PASSWORD: password
+      DB_PORT: 5432
+      GTFS_TRIP_UPDATE_URL: https://gtfsrt.api.translink.com.au/api/realtime/SEQ/TripUpdates
+      GTFS_SERVICE_ALERT_URL: https://gtfsrt.api.translink.com.au/api/realtime/SEQ/Alerts
+      GTFS_VEHICLE_POSITIONS_URL: https://gtfsrt.api.translink.com.au/api/realtime/SEQ/VehiclePositions
+    networks:
+      - seq-db-network
+networks:
+  seq-db-network:
+    name: seq-db-network
+    driver: bridge

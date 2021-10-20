@@ -1,0 +1,9 @@
+[submodule "uq-bus-web"]
+	path = uq-bus-web
+	url = git@github.com:rv3392/uq-bus-web.git
+[submodule "web"]
+	path = web
+	url = git@github.com:rv3392/uq-bus-web.git
+[submodule "api"]
+	path = api
+	url = https://github.com/rv3392/uq-bus-backend-api

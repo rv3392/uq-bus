@@ -1,0 +1,28 @@
+services:
+  web:
+    build:
+      context: ./web/
+      args:
+        REACT_APP_API_URL: 'http://34.129.131.91:5000'
+    ports:
+      - 8080:80
+    networks:
+      - api-network
+  seq-transport-api:
+    build: ./api/
+    ports:
+      - 5000:5000
+    networks:
+      - api-network
+      - seq-db-network
+    environment:
+      DB_HOST: seq-gtfs-database
+      DB_USER: seq-gtfs
+      DB_PASSWORD: password
+      DB_PORT: 5432
+      DB_NAME: seq-gtfs
+networks:
+  api-network:
+    name: api-network
+    driver: bridge
+

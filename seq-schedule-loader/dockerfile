@@ -1,0 +1,7 @@
+FROM python:3.7
+LABEL  maintainer="richal.verma@uq.net.au"
+COPY . .
+RUN pip install -r requirements.txt \
+    && git clone https://github.com/OpenTransitTools/gtfsdb.git \
+    && cd gtfsdb && buildout install prod postgresql && cd ..
+ENTRYPOINT [ "python", "loader.py"]
