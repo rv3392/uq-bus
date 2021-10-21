@@ -1,3 +1,4 @@
+version: "3.9"
 services:
   seq-gtfs-database:
     image: postgres:14
@@ -7,41 +8,33 @@ services:
       POSTGRES_USER: seq-gtfs
     ports:
       - 5432:5432
-    networks:
-      - seq-db-network
     deploy:
       placement:
         constraints:
           - node.labels.type == primary
-
   schedule-loader:
     depends_on:
       - seq-gtfs-database
+    image: rv3392/schedule-loader
     build: ./seq-schedule-loader/
     environment:
-      DB_HOST: seq-gtfs-database
+      DB_HOST: uq-bus_seq-gtfs-database
       DB_USER: seq-gtfs
       DB_PASSWORD: password
       DB_PORT: 5432
       GTFS_SCHEDULE_URL: https://gtfsrt.api.translink.com.au/GTFS/SEQ_GTFS.zip
-    networks:
-      - seq-db-network
-
+    command: ["./wait-for-postgres.sh", "uq-bus_seq-gtfs-database", "5432", "--", "python", "loader.py"]
   realtime-loader:
     depends_on:
       - seq-gtfs-database
+    image: rv3392/realtime-loader
     build: ./seq-realtime-loader/
     environment:
-      DB_HOST: seq-gtfs-database
+      DB_HOST: uq-bus_seq-gtfs-database
       DB_USER: seq-gtfs
       DB_PASSWORD: password
       DB_PORT: 5432
       GTFS_TRIP_UPDATE_URL: https://gtfsrt.api.translink.com.au/api/realtime/SEQ/TripUpdates
       GTFS_SERVICE_ALERT_URL: https://gtfsrt.api.translink.com.au/api/realtime/SEQ/Alerts
       GTFS_VEHICLE_POSITIONS_URL: https://gtfsrt.api.translink.com.au/api/realtime/SEQ/VehiclePositions
-    networks:
-      - seq-db-network
-networks:
-  seq-db-network:
-    name: seq-db-network
-    driver: bridge
+    command: ["./wait-for-postgres.sh", "uq-bus_seq-gtfs-database", "5432", "--", "python", "loader.py"]
