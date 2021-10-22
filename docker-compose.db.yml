@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   seq-gtfs-database:
+    container_name: uq-bus_seq-gtfs-database
     image: postgres:14
     restart: always
     environment:
@@ -23,7 +24,7 @@ services:
       DB_PASSWORD: password
       DB_PORT: 5432
       GTFS_SCHEDULE_URL: https://gtfsrt.api.translink.com.au/GTFS/SEQ_GTFS.zip
-    command: ["./wait-for-postgres.sh", "uq-bus_seq-gtfs-database", "5432", "--", "python", "loader.py"]
+    entrypoint: ["./wait-for-it.sh", "uq-bus_seq-gtfs-database:5432", "-t", "0", "--", "python", "loader.py"]
   realtime-loader:
     depends_on:
       - seq-gtfs-database
@@ -37,4 +38,4 @@ services:
       GTFS_TRIP_UPDATE_URL: https://gtfsrt.api.translink.com.au/api/realtime/SEQ/TripUpdates
       GTFS_SERVICE_ALERT_URL: https://gtfsrt.api.translink.com.au/api/realtime/SEQ/Alerts
       GTFS_VEHICLE_POSITIONS_URL: https://gtfsrt.api.translink.com.au/api/realtime/SEQ/VehiclePositions
-    command: ["./wait-for-postgres.sh", "uq-bus_seq-gtfs-database", "5432", "--", "python", "loader.py"]
+    entrypoint: ["./wait-for-it.sh", "uq-bus_seq-gtfs-database:5432", "-t", "0", "--", "python", "loader.py"]

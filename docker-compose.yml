@@ -5,7 +5,7 @@ services:
     build: 
       context: ./web/
       args:
-        REACT_APP_API_URL: 'http://34.129.131.91:5000'
+        REACT_APP_API_URL: "http://${EXTERNAL_SWARM_IP}:5000"
     ports:
       - 80:80
   seq-transport-api:
@@ -19,4 +19,4 @@ services:
       DB_PASSWORD: password
       DB_PORT: 5432
       DB_NAME: seq-gtfs
-    command: ["./wait-for-postgres.sh", "uq-bus_seq-gtfs-database", "5432", "--", "python", "app.py"]
+    entrypoint: ["./wait-for-it.sh", "uq-bus_seq-gtfs-database:5432", "-t", "0", "--", "python", "app.py"]

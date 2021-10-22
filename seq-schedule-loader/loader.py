@@ -15,7 +15,7 @@ DB_PORT = os.environ["DB_PORT"]
 def load_data(url):
     script_call = [
         GTFS_SCRIPT_NAME,
-        "--database_url", "postgresql://" + DB_USER + ":" + DB_PASSWORD +
+        "--database_url", "postgresql+psycopg2://" + DB_USER + ":" + DB_PASSWORD +
                 "@" + DB_HOST + ":" + DB_PORT,
         url
     ]
